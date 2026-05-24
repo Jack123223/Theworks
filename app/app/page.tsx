@@ -2068,7 +2068,24 @@ function ComparePage({ profile }) {
           model: MODEL,
           max_tokens: 1000,
           system: "You are a student planning expert. Give honest, brief comparisons. Treat all paths equally.",
-          messages: [{ role: "user", content: `Compare for a high school student: ${filled.join(" vs ")}. For each: cost, duration, starting salary, requirements, 2 pros, 2 cons. End with a 2-sentence verdict.` }],
+          messages: [{ role: "user", content: `Compare for a high school student: ${filled.join(" vs ")}.
+
+For each option write a section like:
+**[Option Name]**
+Type: [College/Trade/Military/Apprenticeship/Workforce]
+Cost: [real total cost]
+Duration: [time]
+Starting Salary: [range]
+Requirements: [what you need to get in]
+✅ [Pro 1]
+✅ [Pro 2]
+❌ [Con 1]
+❌ [Con 2]
+Best for: [who this suits]
+
+Then write:
+**Verdict**
+[2-3 honest sentences comparing the key tradeoffs. Don't pick a winner.]` }],
         }),
       });
       const data = await res.json();
@@ -2163,34 +2180,86 @@ function ComparePage({ profile }) {
       )}
 
       {compareText&&!loading&&(
-        <Card>
+        <div>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
             <div style={{ fontSize:15, fontWeight:700, color:"#0F172A" }}>⚖️ {items.filter((x: any)=>x.trim()).join(" vs ")}</div>
             <button onClick={()=>{ setCompareText(""); setResult(null); setItems(["","",""]); setError(""); }} style={{ ...S.sec, fontSize:12, padding:"6px 14px" }}>← Compare something else</button>
           </div>
-          <div style={{ fontSize:13, color:"#374151", lineHeight:1.9 }}>
-            {compareText.split("\n").map((line: any, i: number) => {
-              const boldParts = line.split(/\*\*(.*?)\*\*/g);
+
+          {(() => {
+            // Parse into sections by ## or **Header** lines
+            const sections: any[] = [];
+            let current: any = { title:"", lines:[] };
+            compareText.split("\n").forEach((line: string) => {
+              const h = line.match(/^#{1,3}\s+(.+)/) || (line.match(/^\*\*(.+)\*\*$/) ? [null, line.replace(/\*\*/g,"")] : null);
+              if (h) {
+                if (current.lines.filter((l: string)=>l.trim()).length > 0 || current.title) sections.push({...current});
+                current = { title: h[1].trim(), lines:[] };
+              } else {
+                current.lines.push(line);
+              }
+            });
+            if (current.lines.filter((l: string)=>l.trim()).length > 0 || current.title) sections.push(current);
+
+            return sections.map((sec: any, si: number) => {
+              const isVerdict = /verdict|summary/i.test(sec.title);
+              const hasTable = sec.lines.some((l: string) => l.trim().startsWith("|"));
+
+              // Render table rows
+              const tableRows = sec.lines.filter((l: string) => l.trim().startsWith("|") && !l.match(/^\|[-\s|]+$/));
+
               return (
-                <div key={i} style={{ marginBottom: line.trim()===""?10:2 }}>
-                  {boldParts.map((bp: any, k: number) =>
-                    k%2===1 ? <strong key={k} style={{ color:"#0F172A", fontSize:14 }}>{bp}</strong>
-                            : <span key={k} style={{ color: line.includes("✅")?"#065F46": line.includes("❌")?"#991B1B":"#374151" }}>{bp}</span>
+                <Card key={si} style={{ borderLeft:`4px solid ${isVerdict?"#1A56DB":"#E5E7EB"}`, background:isVerdict?"#EFF6FF":"#fff", marginBottom:12 }}>
+                  {sec.title && (
+                    <div style={{ fontSize:14, fontWeight:700, color:isVerdict?"#1A56DB":"#0F172A", marginBottom:10 }}>
+                      {isVerdict?"📋 ":""}{sec.title}
+                    </div>
                   )}
-                </div>
+
+                  {hasTable ? (
+                    <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+                      {tableRows.map((row: string, ri: number) => {
+                        const cells = row.split("|").filter((_: any, ci: number) => ci > 0 && ci < row.split("|").length - 1);
+                        const isHeader = ri === 0;
+                        return (
+                          <tr key={ri} style={{ background: ri%2===0?"#F8FAFC":"#fff" }}>
+                            {cells.map((cell: string, ci: number) => (
+                              isHeader
+                                ? <th key={ci} style={{ padding:"8px 12px", textAlign:"left", fontSize:11, fontWeight:700, color:"#6B7280", textTransform:"uppercase", letterSpacing:"0.06em", borderBottom:"2px solid #E5E7EB" }}>{cell.trim()}</th>
+                                : <td key={ci} style={{ padding:"8px 12px", borderBottom:"1px solid #F1F5F9", color: ci===0?"#374151":"#1F2937", fontWeight:ci===0?600:400 }}>{cell.trim()}</td>
+                            ))}
+                          </tr>
+                        );
+                      })}
+                    </table>
+                  ) : (
+                    <div style={{ fontSize:13, color:"#374151", lineHeight:1.8 }}>
+                      {sec.lines.map((line: string, li: number) => {
+                        if (!line.trim()) return <div key={li} style={{ height:6 }}/>;
+                        const bold = line.split(/\*\*(.*?)\*\*/g);
+                        return (
+                          <div key={li} style={{ marginBottom:3, color: line.includes("✅")?"#065F46":line.includes("❌")?"#991B1B":"#374151" }}>
+                            {bold.map((bp: string, k: number) => k%2===1 ? <strong key={k}>{bp}</strong> : <span key={k}>{bp}</span>)}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </Card>
               );
-            })}
-          </div>
-          <div style={{ marginTop:14, paddingTop:12, borderTop:"1px solid #F1F5F9", display:"flex", gap:10, flexWrap:"wrap" }}>
-            {items.filter((x: any)=>x.trim()).map((item: any,i: number) => (
-              <a key={i} href={`https://www.google.com/search?q=${encodeURIComponent(item+" requirements apply 2025")}`}
+            });
+          })()}
+
+          <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginTop:4 }}>
+            {items.filter((x: any)=>x.trim()).map((item: any, i: number) => (
+              <a key={i} href={`https://www.google.com/search?q=${encodeURIComponent(item+" apply requirements 2025")}`}
                 target="_blank" rel="noreferrer"
                 style={{ fontSize:12, color:"#1A56DB", textDecoration:"none", fontWeight:600, background:"#EFF6FF", padding:"6px 12px", borderRadius:20, border:"1px solid #BFDBFE" }}>
                 🔎 Research {item}
               </a>
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
       {result&&!loading&&(
