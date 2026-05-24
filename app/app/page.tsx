@@ -2055,52 +2055,28 @@ function ComparePage({ profile }) {
   ];
 
   const compare = async () => {
-    const filled = items.filter((x: any) =>x.trim());
+    const filled = items.filter((x: any) => x.trim());
     if (filled.length < 2) { setError("Enter at least 2 options to compare."); return; }
-    setError(""); setLoading(true); setResult(null);
-
-    const prompt = `Compare these post-high-school options for a student: ${filled.map((f: any,i: number)=>`${i+1}. ${f}`).join(", ")}
-Student: Path interest: ${profile.path||"undecided"}, GPA: ${profile.gpa||"not provided"}
-
-These may be ANY combination: colleges, trade schools, apprenticeships, military branches, workforce jobs, entrepreneur programs, certifications. Treat every path with equal respect and seriousness. Do not favor college.
-
-Give honest, specific, real data for each. Return ONLY valid JSON (no markdown, no backticks, nothing before or after the JSON):
-{
-  "programs": [
-    {
-      "name": "Full official name",
-      "type": "University|Trade School|Apprenticeship|Military|Workforce|Entrepreneurship|Certification|Community College",
-      "overview": "2-3 honest sentences about what this actually is and who it serves",
-      "pros": ["Specific pro with real data","Another advantage","Third pro"],
-      "cons": ["Specific honest con","Another drawback","Third con"],
-      "keyStats": {
-        "Cost": "Total or annual cost with financial aid context",
-        "Duration": "Time to complete or service commitment",
-        "Outcome": "Average starting salary or job placement rate",
-        "Entry Requirements": "GPA, ASVAB, physical test, age, etc",
-        "Location": "On-site, regional, national, or online"
-      },
-      "bestFor": "One sentence — who this option is ideal for",
-      "notFor": "One sentence — who should look elsewhere"
-    }
-  ],
-  "verdict": "3-4 honest sentences on the key trade-offs. Do NOT pick a winner. Respect every path equally.",
-  "questions": [
-    "A self-reflection question before deciding",
-    "A practical question to research further",
-    "A question about values or lifestyle fit"
-  ]
-}`;
+    setError(""); setLoading(true); setResult(null); setCompareText("");
 
     try {
-      const raw    = await callClaude([{role:"user",content:prompt}],
-        "Return ONLY valid JSON. No markdown, no explanation, no text before or after the JSON object.",1400);
-      const parsed = parseJSON(raw);
-      if (!parsed.programs?.length) throw new Error("No comparison data returned");
-      setResult(parsed);
-    } catch(err) {
-      console.error("Compare error:", err.message);
-      setError(`Compare failed: ${err.message}. Try again — this sometimes needs a second attempt.`);
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: MODEL,
+          max_tokens: 1000,
+          system: "You are a student planning expert. Give honest, brief comparisons. Treat all paths equally.",
+          messages: [{ role: "user", content: `Compare for a high school student: ${filled.join(" vs ")}. For each: cost, duration, starting salary, requirements, 2 pros, 2 cons. End with a 2-sentence verdict.` }],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error?.message || `API ${res.status}`);
+      const text = (data.content||[]).filter((b: any)=>b.type==="text").map((b: any)=>b.text).join("").trim();
+      if (!text) throw new Error("No response returned");
+      setCompareText(text);
+    } catch(err: any) {
+      setError(`Compare failed: ${err.message}. Try again.`);
     }
     setLoading(false);
   };
