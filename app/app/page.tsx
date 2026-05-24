@@ -5,8 +5,8 @@ import { useState, useRef, useEffect } from "react";
 const API = "/api/claude";
 const MODEL = "claude-sonnet-4-6";
 
-async function callClaude(messages, system = "", max_tokens = 1000) {
-  const body = { model: MODEL, max_tokens, messages };
+async function callClaude(messages: any[], system = "", max_tokens = 1000) {
+  const body: any = { model: MODEL, max_tokens, messages };
   if (system) body.system = system;
   const res = await fetch(API, {
     method: "POST",
@@ -160,7 +160,7 @@ function calcFit(scholarship, profile) {
     try {
       const parts    = scholarship.deadline.split(" ");
       const deadline = new Date(`${parts[0]} ${parts[1]} ${now.getFullYear()}`);
-      const daysLeft = (deadline - now) / (1000 * 60 * 60 * 24);
+      const daysLeft = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
       if (daysLeft > 0 && daysLeft < 60)  score += 5; // coming up soon
       else if (daysLeft > 60 && daysLeft < 180) score += 2;
     } catch {}
@@ -542,7 +542,7 @@ Return ONLY a JSON object (no markdown):
       <div style={{ fontSize:15, fontWeight:600, color:"#1F2937", marginBottom:8 }}>Researching career data…</div>
       <div style={{ fontSize:13, color:"#6B7280", marginBottom:24 }}>{loadMsg}</div>
       <div style={{ display:"flex", justifyContent:"center", gap:6 }}>
-        {[0,1,2].map(i=>(
+        {[0,1,2].map((i: any) =>(
           <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#1A56DB", animation:`bounce 1s ease-in-out ${i*0.2}s infinite` }} />
         ))}
       </div>
@@ -569,7 +569,7 @@ Return ONLY a JSON object (no markdown):
           <div style={{ fontSize:14, fontWeight:700, color:"#1F2937", marginBottom:6 }}>🧭 Your survey pattern</div>
           <div style={{ fontSize:13, color:"#374151", lineHeight:1.6, marginBottom:12 }}>{results.survey_pattern}</div>
           <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-            {results.clusters?.map((c,i)=>(
+            {results.clusters?.map((c: any,i: number)=>(
               <span key={i} style={{ fontSize:12, fontWeight:600, padding:"3px 10px", borderRadius:10, background:"#EBF5FF", color:"#1A56DB" }}>{c}</span>
             ))}
           </div>
@@ -623,7 +623,7 @@ Return ONLY a JSON object (no markdown):
               <div style={{ marginBottom:12 }}>
                 <div style={{ fontSize:11, fontWeight:700, color:"#6B7280", marginBottom:6, textTransform:"uppercase", letterSpacing:"0.04em" }}>Ways to enter this field</div>
                 <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                  {career.paths_to_enter.map((p,j)=>(
+                  {career.paths_to_enter.map((p: any, j: number) =>(
                     <span key={j} style={{ fontSize:12, padding:"3px 10px", borderRadius:10, background:"#EBF5FF", color:"#1A56DB", fontWeight:500 }}>{p}</span>
                   ))}
                 </div>
@@ -651,7 +651,7 @@ Return ONLY a JSON object (no markdown):
                   📊 BLS.gov data ↗
                 </a>
               )}
-              {career.learn_more?.filter(u=>u&&u.startsWith("http")).slice(0,2).map((url,j)=>(
+              {career.learn_more?.filter((u: any) =>u&&u.startsWith("http")).slice(0,2).map((url: any, j: number) =>(
                 <a key={j} href={url} target="_blank" rel="noreferrer"
                   style={{ display:"inline-flex", alignItems:"center", gap:4, fontSize:12, fontWeight:600, color:"#1A56DB", textDecoration:"none", border:"1px solid #BFDBFE", borderRadius:6, padding:"5px 12px", background:"#EFF6FF" }}>
                   Learn more ↗
@@ -683,7 +683,7 @@ function HomePage({ profile, goals, setPage }) {
   const score = Math.min(100, Math.round(
     (profile.path ? 15 : 0) + (profile.gpa ? 10 : 0) +
     (profile.transcriptAnalysis ? 25 : 0) +
-    (goals.filter(g=>g.progress>0).length * 10) +
+    (goals.filter((g: any) =>g.progress>0).length * 10) +
     (profile.researched?.length > 0 ? 15 : 0)
   ));
   const pathObj   = PATHS.find(p => p.id === profile.path);
@@ -710,7 +710,7 @@ function HomePage({ profile, goals, setPage }) {
   const insights = [
     profile.path ? `You're on the ${profile.path} track. Scholarships, goals & AI are all tailored to this path.` : "Start by choosing your path — college, trade, military, and more are all valid.",
     profile.gpa ? `GPA ${profile.gpa} on record.${!profile.transcriptAnalysis?" Upload your transcript for a deeper AI analysis.":""}` : "Add your GPA and transcripts to unlock personalized scholarship recommendations.",
-    goals.length > 0 ? `${goals.length} active goal${goals.length>1?"s":""} — ${goals.filter(g=>g.progress===100).length} completed. Keep going!` : "Set your first goal and get an AI-built step-by-step roadmap.",
+    goals.length > 0 ? `${goals.length} active goal${goals.length>1?"s":""} — ${goals.filter((g: any) =>g.progress===100).length} completed. Keep going!` : "Set your first goal and get an AI-built step-by-step roadmap.",
   ].filter(Boolean);
 
   return (
@@ -732,7 +732,7 @@ function HomePage({ profile, goals, setPage }) {
 
       {/* Stat cards */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:16, marginBottom:28 }}>
-        {statCards.map(s=>(
+        {statCards.map((s: any) =>(
           <div key={s.label} style={{ background:"#fff", border:"1px solid #EAECF0", borderRadius:14, padding:"20px 20px 18px" }}>
             <div style={{ width:38, height:38, borderRadius:10, background:s.iconBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, marginBottom:14 }}>
               {s.icon}
@@ -751,7 +751,7 @@ function HomePage({ profile, goals, setPage }) {
           <div style={{ fontSize:15, fontWeight:700, color:"#0F172A", marginBottom:16, display:"flex", alignItems:"center", gap:8 }}>
             <span style={{ fontSize:18 }}>⚡</span> Personalized Insights
           </div>
-          {insights.map((ins,i)=>(
+          {insights.map((ins: any, i: number) =>(
             <div key={i} style={{ display:"flex", gap:12, padding:"12px 0", borderBottom:i<insights.length-1?"1px solid #F3F4F6":"none", alignItems:"flex-start" }}>
               <div style={{ width:6, height:6, borderRadius:"50%", background:"#1A56DB", marginTop:6, flexShrink:0 }}/>
               <div style={{ fontSize:14, color:"#374151", lineHeight:1.6 }}>{ins}</div>
@@ -767,7 +767,7 @@ function HomePage({ profile, goals, setPage }) {
         {/* Quick Actions */}
         <div style={{ background:"#fff", border:"1px solid #EAECF0", borderRadius:14, padding:24 }}>
           <div style={{ fontSize:15, fontWeight:700, color:"#0F172A", marginBottom:16 }}>Quick Actions</div>
-          {quickActions.map((a,i)=>(
+          {quickActions.map((a: any,i: number)=>(
             <button key={a.id} onClick={()=>setPage(a.id)} style={{
               display:"flex", alignItems:"center", justifyContent:"space-between", width:"100%",
               padding:"13px 0",
@@ -803,7 +803,7 @@ function PathPage({ profile, setProfile }) {
     <div style={{ maxWidth:900 }}>
       <PageHeader title="Choose Your Post-Grad Path" subtitle="Every path is valid and supported. You can change this anytime." />
       <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
-        {PATHS.map(p=>{
+        {PATHS.map((p: any) =>{
           const active = profile.path===p.id;
           return (
             <div key={p.id} onClick={()=>setProfile(pr=>({...pr,path:p.id}))}
@@ -823,8 +823,8 @@ function PathPage({ profile, setProfile }) {
           <div style={{ fontSize:14, fontWeight:700, color:"#0F172A", marginBottom:12 }}>
             Suggested first steps for {profile.path}
           </div>
-          {PATHS.find(p=>p.id===profile.path)?.goalTemplates.map((g,i)=>(
-            <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 0", borderBottom:i<(PATHS.find(p=>p.id===profile.path)?.goalTemplates.length-1)?"1px solid #F9FAFB":"none" }}>
+          {PATHS.find((p: any) =>p.id===profile.path)?.goalTemplates.map((g: any,i: number)=>(
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 0", borderBottom:i<(PATHS.find((p: any) =>p.id===profile.path)?.goalTemplates.length-1)?"1px solid #F9FAFB":"none" }}>
               <div style={{ width:6, height:6, borderRadius:"50%", background:"#1A56DB", flexShrink:0 }}/>
               <div style={{ fontSize:14, color:"#374151" }}>{g}</div>
             </div>
@@ -861,10 +861,10 @@ function TranscriptPage({ profile, setProfile }) {
   const [fileErr,  setFileErr]  = useState("");
   const [fileName, setFileName] = useState("");
   const [courses,  setCourses]  = useState([{name:"",grade:""},{name:"",grade:""},{name:"",grade:""}]);
-  const fileRef = useRef();
+  const fileRef = useRef<any>(null);
 
   // ── Real FileReader — reads .txt / .csv locally in-browser ──
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: any) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setFileErr("");
@@ -969,7 +969,7 @@ function TranscriptPage({ profile, setProfile }) {
   };
 
   // Drag-and-drop zone — handles both file drops AND text drops
-  const onDragOver  = (e) => { e.preventDefault(); setDragging(true); };
+  const onDragOver  = (e: any) => { e.preventDefault(); setDragging(true); };
   const onDragLeave = ()  => setDragging(false);
   const onDrop      = (e) => {
     e.preventDefault(); setDragging(false);
@@ -985,7 +985,7 @@ function TranscriptPage({ profile, setProfile }) {
   };
 
   const buildTextFromCourses = () => {
-    const lines = courses.filter(c=>c.name.trim()).map(c=>`- ${c.name}: ${c.grade||"N/A"}`);
+    const lines = courses.filter((c: any) =>c.name.trim()).map((c: any) =>`- ${c.name}: ${c.grade||"N/A"}`);
     return `GPA: ${gpa}\n\nCourses:\n${lines.join("\n")}`;
   };
 
@@ -1068,7 +1068,7 @@ Return ONLY valid JSON (absolutely no markdown, no backticks, no explanation bef
   };
 
   const addCourse    = () => setCourses(c=>[...c,{name:"",grade:""}]);
-  const updateCourse = (i,field,val) => setCourses(c=>c.map((r,idx)=>idx===i?{...r,[field]:val}:r));
+  const updateCourse = (i,field,val) => setCourses(c=>c.map((r: any, idx: number) =>idx===i?{...r,[field]:val}:r));
   const clearAll     = () => { setText(""); setFileName(""); setFileErr(""); setResult(null); setCourses([{name:"",grade:""},{name:"",grade:""},{name:"",grade:""}]); if(fileRef.current) fileRef.current.value=""; };
 
   return (
@@ -1153,7 +1153,7 @@ Return ONLY valid JSON (absolutely no markdown, no backticks, no explanation bef
             <div style={{ display:"grid", gridTemplateColumns:"1fr 72px", gap:"6px 8px", alignItems:"center", marginBottom:8 }}>
               <div style={{ fontSize:11, fontWeight:600, color:"#9CA3AF" }}>Course name</div>
               <div style={{ fontSize:11, fontWeight:600, color:"#9CA3AF" }}>Grade</div>
-              {courses.map((c,i)=>(
+              {courses.map((c: any,i: number)=>(
                 <>
                   <input key={`n${i}`} value={c.name} onChange={e=>updateCourse(i,"name",e.target.value)} placeholder="e.g. AP English" style={S.input} />
                   <input key={`g${i}`} value={c.grade} onChange={e=>updateCourse(i,"grade",e.target.value)} placeholder="A-" style={S.input} />
@@ -1186,7 +1186,7 @@ Return ONLY valid JSON (absolutely no markdown, no backticks, no explanation bef
           {result.courses?.length>0 && (
             <Card>
               <SectionTitle>📚 Course breakdown</SectionTitle>
-              {result.courses.map((c,i)=>(
+              {result.courses.map((c: any,i: number)=>(
                 <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"7px 0", borderBottom:i<result.courses.length-1?"1px solid #F3F4F6":"none" }}>
                   <span style={{ fontSize:13, color:"#374151" }}>{c.name}</span>
                   <div style={{ display:"flex", gap:8, alignItems:"center" }}>
@@ -1199,7 +1199,7 @@ Return ONLY valid JSON (absolutely no markdown, no backticks, no explanation bef
           )}
           <Card>
             <SectionTitle>💡 AI recommendations</SectionTitle>
-            {result.recommendations?.map((r,i)=>(
+            {result.recommendations?.map((r: any,i: number)=>(
               <div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<result.recommendations.length-1?"1px solid #F3F4F6":"none" }}>
                 <div style={{ width:6, height:6, borderRadius:"50%", background:"#1A56DB", marginTop:5, flexShrink:0 }} />
                 <div style={{ fontSize:13, color:"#374151", lineHeight:1.5 }}>{r}</div>
@@ -1210,11 +1210,11 @@ Return ONLY valid JSON (absolutely no markdown, no backticks, no explanation bef
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
               <Card>
                 <div style={{ fontSize:12, fontWeight:700, color:"#065F46", marginBottom:8 }}>✅ Strengths</div>
-                {result.strengths?.map((s,i)=><div key={i} style={{ fontSize:13, color:"#374151", padding:"3px 0" }}>• {s}</div>)}
+                {result.strengths?.map((s: any, i: number) =><div key={i} style={{ fontSize:13, color:"#374151", padding:"3px 0" }}>• {s}</div>)}
               </Card>
               <Card>
                 <div style={{ fontSize:12, fontWeight:700, color:"#92400E", marginBottom:8 }}>⚠️ Needs improvement</div>
-                {result.weaknesses?.map((s,i)=><div key={i} style={{ fontSize:13, color:"#374151", padding:"3px 0" }}>• {s}</div>)}
+                {result.weaknesses?.map((s: any, i: number) =><div key={i} style={{ fontSize:13, color:"#374151", padding:"3px 0" }}>• {s}</div>)}
               </Card>
             </div>
           )}
@@ -1270,7 +1270,7 @@ function ScholarshipsPage({ profile }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error?.message || `API ${res.status}`);
-      const text = (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").trim();
+      const text = (data.content||[]).filter((b: any) =>b.type==="text").map((b: any) =>b.text).join("").trim();
       if (text) setSearchText(text);
       setLastUpdated(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));
     } catch(err) {
@@ -1363,20 +1363,20 @@ Be specific — use real scholarship names like "APIA Scholars Program", "JACL N
   ];
 
   const allScholarships = [
-    ...SCHOLARSHIPS.map(s=>({...s, new:false, fit:calcFit(s,profile), tags:s.tags||[]})),
-    ...liveScholarships.map((s,i)=>({...s, id:`live-${i}`, fit:calcFit(s,profile)})),
+    ...SCHOLARSHIPS.map((s: any) =>({...s, new:false, fit:calcFit(s,profile), tags:s.tags||[]})),
+    ...liveScholarships.map((s: any, i: number) =>({...s, id:`live-${i}`, fit:calcFit(s,profile)})),
   ];
-  const types = ["All",...new Set(allScholarships.map(s=>s.type).filter(Boolean))];
+  const types = ["All",...new Set(allScholarships.map((s: any) =>s.type).filter(Boolean))];
 
   const displayList = aiSearchResults
-    ? aiSearchResults.map((s,i)=>({...s, id:`search-${i}`, fit:calcFit(s,profile)||s.fit||75}))
+    ? aiSearchResults.map((s: any, i: number) =>({...s, id:`search-${i}`, fit:calcFit(s,profile)||s.fit||75}))
     : allScholarships.filter(s => {
         if (typeFilter!=="All"&&s.type!==typeFilter) return false;
-        if (qualFilter!=="All") { const qf=QUAL_FILTERS.find(f=>f.id===qualFilter); if(qf?.check&&!qf.check(s)) return false; }
+        if (qualFilter!=="All") { const qf=QUAL_FILTERS.find((f: any) =>f.id===qualFilter); if(qf?.check&&!qf.check(s)) return false; }
         return true;
       }).sort((a,b)=>b.fit-a.fit);
 
-  const toggleSave = (id) => setSavedIds(ids=>ids.includes(id)?ids.filter(x=>x!==id):[...ids,id]);
+  const toggleSave = (id) => setSavedIds(ids=>ids.includes(id)?ids.filter((x: any) =>x!==id):[...ids,id]);
 
   const ScholarCard = ({s}) => {
     const saved = savedIds.includes(s.id);
@@ -1453,7 +1453,7 @@ Be specific — use real scholarship names like "APIA Scholars Program", "JACL N
           <>
             <div style={{ fontSize:11, fontWeight:600, color:"#6B7280", marginBottom:5, textTransform:"uppercase", letterSpacing:"0.06em" }}>What you qualify for</div>
             <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:8 }}>
-              {QUAL_FILTERS.map(f=>(
+              {QUAL_FILTERS.map((f: any) =>(
                 <button key={f.id} onClick={()=>setQualFilter(f.id)}
                   style={{ fontSize:11, padding:"4px 10px", borderRadius:20, border:`1px solid ${qualFilter===f.id?"#1A56DB":"#E2E8F0"}`, background:qualFilter===f.id?"#1A56DB":"#fff", color:qualFilter===f.id?"#fff":"#475569", cursor:"pointer", fontWeight:qualFilter===f.id?700:400 }}>
                   {f.label}
@@ -1462,7 +1462,7 @@ Be specific — use real scholarship names like "APIA Scholars Program", "JACL N
             </div>
             <div style={{ fontSize:11, fontWeight:600, color:"#6B7280", marginBottom:5, textTransform:"uppercase", letterSpacing:"0.06em" }}>Scholarship type</div>
             <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:8 }}>
-              {types.map(t=>(
+              {types.map((t: any) =>(
                 <button key={t} onClick={()=>setTypeFilter(t)}
                   style={{ ...S.chip, background:typeFilter===t?"#0F172A":"#F8FAFC", color:typeFilter===t?"#fff":"#1A56DB", fontWeight:typeFilter===t?700:500, fontSize:11 }}>
                   {t}
@@ -1511,7 +1511,7 @@ Be specific — use real scholarship names like "APIA Scholars Program", "JACL N
           <div style={{ fontSize:12, color:"#6B7280", margin:"4px 0 8px", paddingLeft:2 }}>
             {aiSearchResults.length} scholarships found for "<strong>{searchQuery}</strong>" — powered by live web search
           </div>
-          {aiSearchResults.map((s,i)=>(
+          {aiSearchResults.map((s: any, i: number) =>(
             <Card key={i} style={{ borderLeft:"3px solid #1A56DB" }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:6 }}>
                 <div style={{ flex:1, paddingRight:8 }}>
@@ -1605,7 +1605,7 @@ Be specific — use real scholarship names like "APIA Scholars Program", "JACL N
         </Card>
       )}
 
-      {!searchText&&!aiSearchResults?.length&&displayList.map((s,i)=><ScholarCard key={s.id||i} s={s}/>)}
+      {!searchText&&!aiSearchResults?.length&&displayList.map((s: any, i: number) =><ScholarCard key={s.id||i} s={s}/>)}
 
       {!aiSearchResults&&(
         <div style={{ textAlign:"center", padding:"8px 0 16px" }}>
@@ -1623,7 +1623,7 @@ function GoalsPage({ profile, goals, setGoals }) {
   const [adding,  setAdding]  = useState(false);
   const [newGoal, setNewGoal] = useState("");
   const [loading, setLoading] = useState(false);
-  const pathObj = PATHS.find(p=>p.id===profile.path);
+  const pathObj = PATHS.find((p: any) =>p.id===profile.path);
 
   const createGoal = async () => {
     if (!newGoal.trim()) return;
@@ -1670,10 +1670,10 @@ Return ONLY JSON (no markdown):
   };
 
   const toggleStep = (goalId, stepIdx) => {
-    setGoals(gs=>gs.map(g=>{
+    setGoals(gs=>gs.map((g: any) =>{
       if (g.id!==goalId) return g;
-      const steps    = g.steps.map((s,i)=>i===stepIdx?{...s,done:!s.done}:s);
-      const progress = Math.round((steps.filter(s=>s.done).length/steps.length)*100);
+      const steps    = g.steps.map((s: any, i: number) =>i===stepIdx?{...s,done:!s.done}:s);
+      const progress = Math.round((steps.filter((s: any) =>s.done).length/steps.length)*100);
       return {...g,steps,progress};
     }));
   };
@@ -1698,7 +1698,7 @@ Return ONLY JSON (no markdown):
               <div style={{ marginTop:14 }}>
                 <div style={{ fontSize:11, fontWeight:700, color:"#9CA3AF", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>Suggested for your path</div>
                 <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
-                  {pathObj.goalTemplates.slice(0,4).map((t,i)=>(
+                  {pathObj.goalTemplates.slice(0,4).map((t: any,i: number)=>(
                     <button key={i} onClick={()=>setNewGoal(t)}
                       style={{ fontSize:12, padding:"5px 12px", border:"1.5px solid #DBEAFE", borderRadius:20, background:"#EFF6FF", color:"#1A56DB", cursor:"pointer", fontWeight:600 }}>
                       + {t}
@@ -1714,26 +1714,26 @@ Return ONLY JSON (no markdown):
               <div style={{ fontSize:14 }}>Add your first goal above to get an AI roadmap.</div>
             </div>
           )}
-          {goals.map(g=>(
+          {goals.map((g: any) =>(
             <Card key={g.id}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
                 <div style={{ fontSize:15, fontWeight:700, color:"#0F172A" }}>{g.emoji} {g.title}</div>
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                   <div style={{ fontSize:18, fontWeight:800, color:g.progress===100?"#059669":"#1A56DB" }}>{g.progress}%</div>
-                  <button onClick={()=>setGoals(gs=>gs.filter(x=>x.id!==g.id))} style={{ background:"none", border:"none", color:"#D1D5DB", cursor:"pointer", fontSize:18, lineHeight:1 }}>×</button>
+                  <button onClick={()=>setGoals(gs=>gs.filter((x: any) =>x.id!==g.id))} style={{ background:"none", border:"none", color:"#D1D5DB", cursor:"pointer", fontSize:18, lineHeight:1 }}>×</button>
                 </div>
               </div>
               <ProgressBar pct={g.progress} color={g.progress===100?"#059669":"#1A56DB"} />
               {g.tip&&<div style={{ fontSize:12, color:"#6B7280", fontStyle:"italic", margin:"8px 0 12px" }}>{g.tip}</div>}
-              {["week","month","year"].map(horizon=>{
-                const hs = g.steps?.filter(s=>s.horizon===horizon);
+              {["week","month","year"].map((horizon: any) =>{
+                const hs = g.steps?.filter((s: any) =>s.horizon===horizon);
                 if (!hs?.length) return null;
                 return (
                   <div key={horizon} style={{ marginBottom:12 }}>
                     <div style={{ fontSize:11, fontWeight:700, color:horizon==="week"?"#065F46":horizon==="month"?"#92400E":"#1E40AF", marginBottom:6, textTransform:"uppercase", letterSpacing:"0.07em" }}>
                       {horizon==="week"?"⚡ This week":horizon==="month"?"📅 This month":"🏆 This year"}
                     </div>
-                    {hs.map((s,i)=>{
+                    {hs.map((s: any, i: number) =>{
                       const idx = g.steps.indexOf(s);
                       return (
                         <div key={i} onClick={()=>toggleStep(g.id,idx)}
@@ -1757,19 +1757,19 @@ Return ONLY JSON (no markdown):
             <span style={{ fontSize:14, fontWeight:700, color:"#F1F5F9" }}>Path Progress</span>
           </div>
           <div style={{ fontSize:42, fontWeight:900, color:"#fff", letterSpacing:"-1px", lineHeight:1 }}>
-            {goals.length===0?0:Math.round(goals.filter(g=>g.progress===100).length/goals.length*100)}%
+            {goals.length===0?0:Math.round(goals.filter((g: any) =>g.progress===100).length/goals.length*100)}%
           </div>
           <div style={{ fontSize:11, fontWeight:700, color:"#475569", textTransform:"uppercase", letterSpacing:"0.08em", marginTop:4, marginBottom:20 }}>Goals completed</div>
           <div style={{ height:3, background:"rgba(255,255,255,0.1)", borderRadius:3, overflow:"hidden", marginBottom:16 }}>
-            <div style={{ height:"100%", width:`${goals.length===0?0:Math.round(goals.filter(g=>g.progress===100).length/goals.length*100)}%`, background:"#3B82F6", borderRadius:3 }}/>
+            <div style={{ height:"100%", width:`${goals.length===0?0:Math.round(goals.filter((g: any) =>g.progress===100).length/goals.length*100)}%`, background:"#3B82F6", borderRadius:3 }}/>
           </div>
           <div style={{ fontSize:13, color:"#475569" }}>
-            {goals.length===0?"Add your first goal to get started.":`${goals.filter(g=>g.progress===100).length} of ${goals.length} goal${goals.length!==1?"s":""} complete`}
+            {goals.length===0?"Add your first goal to get started.":`${goals.filter((g: any) =>g.progress===100).length} of ${goals.length} goal${goals.length!==1?"s":""} complete`}
           </div>
           {profile.path&&(
             <div style={{ marginTop:20, paddingTop:16, borderTop:"1px solid rgba(255,255,255,0.07)" }}>
               <div style={{ fontSize:11, fontWeight:700, color:"#475569", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>Current path</div>
-              <div style={{ fontSize:14, fontWeight:600, color:"#93C5FD" }}>{PATHS.find(p=>p.id===profile.path)?.icon} {profile.path}</div>
+              <div style={{ fontSize:14, fontWeight:600, color:"#93C5FD" }}>{PATHS.find((p: any) =>p.id===profile.path)?.icon} {profile.path}</div>
             </div>
           )}
         </div>
@@ -1786,7 +1786,7 @@ function ResearchPage({ profile, setProfile }) {
   const [history,    setHistory]    = useState(profile.searchHistory||[]);
   const [autoSearch, setAutoSearch] = useState(null);
   const [view,       setView]       = useState("search"); // "search" | "history"
-  const pathObj = PATHS.find(p=>p.id===profile.path);
+  const pathObj = PATHS.find((p: any) =>p.id===profile.path);
 
   useEffect(() => {
     if (autoSearch) { setAutoSearch(null); research(autoSearch); }
@@ -1804,7 +1804,7 @@ function ResearchPage({ profile, setProfile }) {
       setResult(parsed);
       // Auto-save every successful search to history
       const entry = { ...parsed, searchedAt: new Date().toLocaleDateString(), pathLabel: profile.path, query: q };
-      const updated = [entry, ...(profile.searchHistory||[]).filter(h=>h.query!==q)].slice(0,20);
+      const updated = [entry, ...(profile.searchHistory||[]).filter((h: any) =>h.query!==q)].slice(0,20);
       setHistory(updated);
       setProfile(p=>({...p, searchHistory:updated, researched:updated}));
     } catch(err) {
@@ -1822,7 +1822,7 @@ function ResearchPage({ profile, setProfile }) {
   };
 
   const deleteHistory = (q) => {
-    const updated = history.filter(h=>h.query!==q);
+    const updated = history.filter((h: any) =>h.query!==q);
     setHistory(updated);
     setProfile(p=>({...p, searchHistory:updated, researched:updated}));
   };
@@ -1882,7 +1882,7 @@ function ResearchPage({ profile, setProfile }) {
       {data.tips?.length>0&&!data._error&&(
         <div style={{ marginBottom:14 }}>
           <div style={{ fontSize:12, fontWeight:700, color:"#1A56DB", marginBottom:8 }}>✨ AI tips to boost your chances</div>
-          {data.tips.map((t,i)=>(
+          {data.tips.map((t: any,i: number)=>(
             <div key={i} style={{ display:"flex", gap:10, padding:"6px 0", borderBottom:i<data.tips.length-1?"1px solid #F3F4F6":"none" }}>
               <div style={{ width:6, height:6, borderRadius:"50%", background:"#1A56DB", marginTop:5, flexShrink:0 }} />
               <div style={{ fontSize:13, color:"#374151", lineHeight:1.5 }}>{t}</div>
@@ -1931,7 +1931,7 @@ function ResearchPage({ profile, setProfile }) {
         {/* Quick search chips */}
         {pathObj&&(
           <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10 }}>
-            {pathObj.quickSearches.map(s=>(
+            {pathObj.quickSearches.map((s: any) =>(
               <button key={s} onClick={()=>{ setQuery(s); setAutoSearch(s); }} style={S.chip}>{s}</button>
             ))}
           </div>
@@ -1959,7 +1959,7 @@ function ResearchPage({ profile, setProfile }) {
         <Card>
           <SectionTitle>🕐 Search history ({history.length})</SectionTitle>
           <div style={{ fontSize:12, color:"#6B7280", marginBottom:12 }}>Click any search to reload the full results without searching again.</div>
-          {history.map((h,i)=>(
+          {history.map((h: any,i: number)=>(
             <div key={i} style={{ borderBottom:i<history.length-1?"1px solid #F3F4F6":"none", padding:"10px 0" }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
                 <div>
@@ -2012,7 +2012,7 @@ function ResearchPage({ profile, setProfile }) {
           { icon:"🏗️", label:"Construction Companies", desc:"Local general contractors and specialty firms offering job shadowing, summer internships, and pre-apprenticeship programs for students 16+." },
           { icon:"🏥", label:"Healthcare & Hospitals", desc:"CNA certification programs, hospital volunteer pipelines, and healthcare internships connecting students to local providers." },
           { icon:"🚒", label:"Public Service", desc:"Fire cadet programs, police explorer posts, and EMS volunteering — local departments recruiting the next generation." },
-        ].map((p,i)=>(
+        ].map((p: any,i: number)=>(
           <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:i<4?"1px solid #BFDBFE":"none" }}>
             <div style={{ fontSize:18, flexShrink:0 }}>{p.icon}</div>
             <div>
@@ -2050,11 +2050,11 @@ function ComparePage({ profile }) {
   ];
 
   const compare = async () => {
-    const filled = items.filter(x=>x.trim());
+    const filled = items.filter((x: any) =>x.trim());
     if (filled.length < 2) { setError("Enter at least 2 options to compare."); return; }
     setError(""); setLoading(true); setResult(null);
 
-    const prompt = `Compare these post-high-school options for a student: ${filled.map((f,i)=>`${i+1}. ${f}`).join(", ")}
+    const prompt = `Compare these post-high-school options for a student: ${filled.map((f: any,i: number)=>`${i+1}. ${f}`).join(", ")}
 Student: Path interest: ${profile.path||"undecided"}, GPA: ${profile.gpa||"not provided"}
 
 These may be ANY combination: colleges, trade schools, apprenticeships, military branches, workforce jobs, entrepreneur programs, certifications. Treat every path with equal respect and seriousness. Do not favor college.
@@ -2129,7 +2129,7 @@ Give honest, specific, real data for each. Return ONLY valid JSON (no markdown, 
       <Card>
         {/* Inputs row — matches screenshot */}
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12, marginBottom:16 }}>
-          {[0,1,2].map(i=>(
+          {[0,1,2].map((i: any) =>(
             <div key={i}>
               <div style={{ fontSize:11, fontWeight:700, color:"#9CA3AF", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:6 }}>
                 {i===2?"Option 3 (optional)":`Option ${i+1}`}
@@ -2156,14 +2156,14 @@ Give honest, specific, real data for each. Return ONLY valid JSON (no markdown, 
 
         {/* Big generate button — matches screenshot */}
         <button onClick={compare}
-          disabled={loading||items.filter(x=>x.trim()).length<2}
-          style={{ width:"100%", padding:"15px", background:items.filter(x=>x.trim()).length<2||loading?"#94A3B8":"#374151", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:items.filter(x=>x.trim()).length<2?"not-allowed":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, marginBottom:14 }}>
+          disabled={loading||items.filter((x: any) =>x.trim()).length<2}
+          style={{ width:"100%", padding:"15px", background:items.filter((x: any) =>x.trim()).length<2||loading?"#94A3B8":"#374151", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:items.filter((x: any) =>x.trim()).length<2?"not-allowed":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, marginBottom:14 }}>
           {loading?<><Spinner/>Comparing…</>:<>⚖️ Generate Comparison</>}
         </button>
 
         {/* Quick compare chips — matches screenshot */}
         <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
-          {QUICK_PAIRS.slice(0,6).map((pair,i)=>(
+          {QUICK_PAIRS.slice(0,6).map((pair: any, i: number) =>(
             <button key={i} onClick={()=>{ setItems([...pair.values]); setResult(null); setError(""); }}
               style={{ fontSize:12, padding:"6px 14px", border:"1.5px solid #E5E7EB", borderRadius:20, background:"#fff", color:"#374151", cursor:"pointer", fontWeight:500 }}>
               {pair.label}
@@ -2175,7 +2175,7 @@ Give honest, specific, real data for each. Return ONLY valid JSON (no markdown, 
       {loading&&(
         <Card style={{ textAlign:"center", padding:32 }}>
           <Spinner/>
-          <div style={{ fontSize:14, color:"#6B7280", marginTop:8 }}>Researching {items.filter(x=>x.trim()).join(" vs ")}…</div>
+          <div style={{ fontSize:14, color:"#6B7280", marginTop:8 }}>Researching {items.filter((x: any) =>x.trim()).join(" vs ")}…</div>
           <div style={{ fontSize:12, color:"#6B7280", marginTop:4 }}>Getting real data — about 15 seconds</div>
         </Card>
       )}
@@ -2208,11 +2208,11 @@ Give honest, specific, real data for each. Return ONLY valid JSON (no markdown, 
                   )}
                   <div style={{ marginBottom:8 }}>
                     <div style={{ fontSize:10, fontWeight:700, color:PROS_COLOR, marginBottom:4, textTransform:"uppercase" }}>✓ Pros</div>
-                    {prog.pros?.map((p,i)=><div key={i} style={{ fontSize:12, color:PROS_COLOR, background:PROS_BG, borderRadius:5, padding:"4px 8px", marginBottom:3, lineHeight:1.4 }}>{p}</div>)}
+                    {prog.pros?.map((p: any,i: number)=><div key={i} style={{ fontSize:12, color:PROS_COLOR, background:PROS_BG, borderRadius:5, padding:"4px 8px", marginBottom:3, lineHeight:1.4 }}>{p}</div>)}
                   </div>
                   <div style={{ marginBottom:8 }}>
                     <div style={{ fontSize:10, fontWeight:700, color:CONS_COLOR, marginBottom:4, textTransform:"uppercase" }}>✗ Cons</div>
-                    {prog.cons?.map((c,i)=><div key={i} style={{ fontSize:12, color:CONS_COLOR, background:CONS_BG, borderRadius:5, padding:"4px 8px", marginBottom:3, lineHeight:1.4 }}>{c}</div>)}
+                    {prog.cons?.map((c: any,i: number)=><div key={i} style={{ fontSize:12, color:CONS_COLOR, background:CONS_BG, borderRadius:5, padding:"4px 8px", marginBottom:3, lineHeight:1.4 }}>{c}</div>)}
                   </div>
                   {prog.bestFor&&<div style={{ background:"#F0FDF4", border:"1px solid #BBF7D0", borderRadius:6, padding:"7px 10px", marginBottom:5 }}>
                     <div style={{ fontSize:10, fontWeight:700, color:"#065F46", marginBottom:2 }}>BEST FOR</div>
@@ -2230,7 +2230,7 @@ Give honest, specific, real data for each. Return ONLY valid JSON (no markdown, 
           {result.questions?.length>0&&(
             <Card>
               <SectionTitle>❓ Questions to ask yourself before deciding</SectionTitle>
-              {result.questions.map((q,i)=>(
+              {result.questions.map((q: any,i: number)=>(
                 <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:i<result.questions.length-1?"1px solid #F3F4F6":"none" }}>
                   <div style={{ width:22, height:22, borderRadius:"50%", background:"#EFF6FF", color:"#1A56DB", fontSize:11, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{i+1}</div>
                   <div style={{ fontSize:13, color:"#374151", lineHeight:1.5 }}>{q}</div>
@@ -2333,7 +2333,7 @@ Include 8-10 realistic, specific steps relevant to the ${profile.path} path. Cat
     try {
       const raw    = await callClaude([{role:"user",content:prompt}],"Return ONLY a valid JSON array. No markdown, no backticks, no explanation.",800);
       const parsed = parseJSON(raw);
-      setChecklist(Array.isArray(parsed) ? parsed.map(s=>({...s,done:false})) : []);
+      setChecklist(Array.isArray(parsed) ? parsed.map((s: any) =>({...s,done:false})) : []);
     } catch(err) {
       console.error("Checklist error:", err.message);
       setChecklist([]);
@@ -2341,9 +2341,9 @@ Include 8-10 realistic, specific steps relevant to the ${profile.path} path. Cat
     setGenLoading(false);
   };
 
-  const toggleCheck = (i) => setChecklist(c => c.map((s,idx)=>idx===i?{...s,done:!s.done}:s));
+  const toggleCheck = (i) => setChecklist(c => c.map((s: any, idx: number) =>idx===i?{...s,done:!s.done}:s));
 
-  const cats = checklist ? [...new Set(checklist.map(s=>s.category))] : [];
+  const cats = checklist ? [...new Set(checklist.map((s: any) =>s.category))] : [];
 
   return (
     <div style={{ maxWidth:1100 }}>
@@ -2369,7 +2369,7 @@ Include 8-10 realistic, specific steps relevant to the ${profile.path} path. Cat
 
             {/* Table header */}
             <div style={{ display:"grid", gridTemplateColumns:"2fr 1.2fr 1.2fr 80px", gap:8, padding:"8px 12px", borderBottom:"1.5px solid #F1F5F9" }}>
-              {["PROGRAM","DEADLINE","STATUS","ACTION"].map(h=>(
+              {["PROGRAM","DEADLINE","STATUS","ACTION"].map((h: any) =>(
                 <div key={h} style={{ fontSize:11, fontWeight:700, color:"#9CA3AF", letterSpacing:"0.07em" }}>{h}</div>
               ))}
             </div>
@@ -2377,13 +2377,13 @@ Include 8-10 realistic, specific steps relevant to the ${profile.path} path. Cat
             {apps.length===0?(
               <div style={{ textAlign:"center", padding:"28px 0", color:"#9CA3AF", fontSize:13, fontStyle:"italic" }}>No applications added yet.</div>
             ):(
-              apps.map(app=>(
+              apps.map((app: any) =>(
                 <div key={app.id} style={{ display:"grid", gridTemplateColumns:"2fr 1.2fr 1.2fr 80px", gap:8, padding:"12px 12px", borderBottom:"1px solid #F9FAFB", alignItems:"center" }}>
                   <div style={{ fontSize:14, fontWeight:600, color:"#0F172A" }}>{app.name}</div>
                   <div style={{ fontSize:13, color:"#6B7280" }}>{app.deadline||"—"}</div>
                   <select value={app.status} onChange={e=>updateStatus(app.id,e.target.value)}
                     style={{ fontSize:12, fontWeight:600, padding:"4px 8px", borderRadius:20, border:"none", background:STATUS_COLORS[app.status]?.bg||"#F3F4F6", color:STATUS_COLORS[app.status]?.color||"#374151", cursor:"pointer", width:"100%" }}>
-                    {STATUS_OPTIONS.map(s=><option key={s} value={s}>{s}</option>)}
+                    {STATUS_OPTIONS.map((s: any) =><option key={s} value={s}>{s}</option>)}
                   </select>
                   <button onClick={()=>deleteApp(app.id)} style={{ background:"none", border:"none", color:"#D1D5DB", cursor:"pointer", fontSize:16 }}>×</button>
                 </div>
@@ -2405,10 +2405,10 @@ Include 8-10 realistic, specific steps relevant to the ${profile.path} path. Cat
                 Generate a personalized checklist for the {profile.path||"selected"} path.
               </div>
             )}
-            {checklist&&cats.map(cat=>(
+            {checklist&&cats.map((cat: any) =>(
               <div key={cat} style={{ marginBottom:14 }}>
                 <div style={{ fontSize:11, fontWeight:700, color:"#1A56DB", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:8 }}>{cat}</div>
-                {checklist.filter(s=>s.category===cat).map((s,i)=>{
+                {checklist.filter((s: any) =>s.category===cat).map((s: any, i: number) =>{
                   const idx = checklist.indexOf(s);
                   return (
                     <div key={i} onClick={()=>toggleCheck(idx)}
@@ -2435,7 +2435,7 @@ Include 8-10 realistic, specific steps relevant to the ${profile.path} path. Cat
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
               <span style={{ fontSize:15, fontWeight:700, color:"#F1F5F9" }}>Quick Portals</span>
             </div>
-            {portals.slice(0,6).map((p,i)=>(
+            {portals.slice(0,6).map((p: any,i: number)=>(
               <a key={i} href={p.url} target="_blank" rel="noreferrer"
                 style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"13px 14px", background:"rgba(255,255,255,0.07)", borderRadius:10, marginBottom:8, textDecoration:"none", color:"#F1F5F9", fontSize:14, fontWeight:600 }}>
                 {p.name}
@@ -2456,7 +2456,7 @@ Include 8-10 realistic, specific steps relevant to the ${profile.path} path. Cat
               "Enter the destination program email or ID",
               "Pay any fees (usually free for students)",
               "Confirm delivery within 3–5 business days",
-            ].map((step,i)=>(
+            ].map((step: any, i: number) =>(
               <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", padding:"5px 0", fontSize:13, color:"#1E40AF" }}>
                 <span style={{ fontWeight:700, flexShrink:0 }}>{i+1}.</span>
                 <span>{step}</span>
@@ -2495,8 +2495,8 @@ I'm focused on academic topics only. For anything outside that — medical, lega
     setInput("");
     setMsgs(m=>[...m,{role:"user",text:msg}]);
     setLoading(true);
-    const context = `Student profile: Path: ${profile.path||"undecided"} | GPA: ${profile.gpa||"not provided"} | Goals: ${goals.map(g=>g.title).join(", ")||"none"} | Researched: ${profile.researched?.map(r=>r.name).join(", ")||"none"}`;
-    const history = msgs.map(m=>({role:m.role==="assistant"?"assistant":"user",content:m.text}));
+    const context = `Student profile: Path: ${profile.path||"undecided"} | GPA: ${profile.gpa||"not provided"} | Goals: ${goals.map((g: any) =>g.title).join(", ")||"none"} | Researched: ${profile.researched?.map((r: any) =>r.name).join(", ")||"none"}`;
+    const history = msgs.map((m: any) =>({role:m.role==="assistant"?"assistant":"user",content:m.text}));
     try {
       const reply = await callClaude([...history,{role:"user",content:`${context}\n\nStudent: ${msg}`}],AI_SYSTEM,600);
       setMsgs(m=>[...m,{role:"assistant",text:reply}]);
@@ -2523,7 +2523,7 @@ I'm focused on academic topics only. For anything outside that — medical, lega
         ⚠️ <strong>Academic guidance only.</strong> This AI does not provide legal, medical, financial investment, or personal life advice. For those topics, speak with a qualified professional or trusted adult.
       </div>
       <div style={{ flex:1, overflowY:"auto", paddingBottom:12 }}>
-        {msgs.map((m,i)=>(
+        {msgs.map((m: any,i: number)=>(
           <div key={i} style={{ display:"flex", justifyContent:m.role==="user"?"flex-end":"flex-start", marginBottom:10 }}>
             <div style={{ maxWidth:"87%", padding:"10px 14px", borderRadius:m.role==="user"?"18px 18px 4px 18px":"18px 18px 18px 4px", background:m.role==="user"?"#1A56DB":"#F1F5F9", color:m.role==="user"?"#fff":"#1F2937", fontSize:13, lineHeight:1.6, whiteSpace:"pre-wrap" }}>
               {m.text}
@@ -2535,7 +2535,7 @@ I'm focused on academic topics only. For anything outside that — medical, lega
       </div>
       {msgs.length<=2&&(
         <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10 }}>
-          {chips.map(c=><button key={c} onClick={()=>send(c)} style={S.chip}>{c}</button>)}
+          {chips.map((c: any) =><button key={c} onClick={()=>send(c)} style={S.chip}>{c}</button>)}
         </div>
       )}
       <div style={{ display:"flex", gap:8 }}>
@@ -2607,7 +2607,7 @@ function OnboardingFlow({ onComplete }) {
       <div style={{ background:"#fff", borderRadius:16, padding:"36px 32px", maxWidth:440, width:"100%", textAlign:"center", boxShadow:"0 24px 48px rgba(0,0,0,0.15)" }}>
         {/* Step dots */}
         <div style={{ display:"flex", justifyContent:"center", gap:6, marginBottom:28 }}>
-          {steps.map((_,i)=>(
+          {steps.map((_: any, i: number) =>(
             <div key={i} style={{ width: i===step?20:6, height:6, borderRadius:3, background: i===step?"#1A56DB": i<step?"#93C5FD":"#E2E8F0", transition:"all 0.25s" }} />
           ))}
         </div>
@@ -2656,7 +2656,7 @@ export default function App() {
   // Clear all saved data (for development / reset)
   const clearData = () => {
     if (!window.confirm("Reset all your TheWorks data? This cannot be undone.")) return;
-    ["tw_profile","tw_goals","tw_page","tw_onboarded"].forEach(k=>localStorage.removeItem(k));
+    ["tw_profile","tw_goals","tw_page","tw_onboarded"].forEach((k: any) =>localStorage.removeItem(k));
     window.location.reload();
   };
 
@@ -2669,10 +2669,10 @@ export default function App() {
 
   // Simplified nav — group into logical clusters
   const NAV_GROUPED = [
-    { section:"Plan", items: NAV.filter(n=>["home","discover","path"].includes(n.id)) },
-    { section:"Academics", items: NAV.filter(n=>["transcript","goals","research"].includes(n.id)) },
-    { section:"Opportunities", items: NAV.filter(n=>["scholarships","compare","applications"].includes(n.id)) },
-    { section:"Tools", items: NAV.filter(n=>["ai"].includes(n.id)) },
+    { section:"Plan", items: NAV.filter((n: any) =>["home","discover","path"].includes(n.id)) },
+    { section:"Academics", items: NAV.filter((n: any) =>["transcript","goals","research"].includes(n.id)) },
+    { section:"Opportunities", items: NAV.filter((n: any) =>["scholarships","compare","applications"].includes(n.id)) },
+    { section:"Tools", items: NAV.filter((n: any) =>["ai"].includes(n.id)) },
   ];
 
   // SVG icons matching the screenshots
@@ -2732,10 +2732,10 @@ export default function App() {
 
         {/* Nav */}
         <nav style={{ flex:1, padding:"12px 0", overflowY:"auto" }}>
-          {NAV_GROUPED.map(group=>(
+          {NAV_GROUPED.map((group: any) =>(
             <div key={group.section} style={{ marginBottom:8 }}>
               <div style={{ fontSize:10, fontWeight:700, color:"#475569", padding:"10px 20px 5px", textTransform:"uppercase", letterSpacing:"0.1em" }}>{group.section}</div>
-              {group.items.map(n=>(
+              {group.items.map((n: any) =>(
                 <button key={n.id} onClick={()=>setPage(n.id)} style={{
                   display:"flex", alignItems:"center", gap:10, width:"100%",
                   padding:"9px 20px", margin:"1px 0",
@@ -2778,7 +2778,7 @@ export default function App() {
           <div style={{ display:"flex", gap:10, alignItems:"center" }}>
             {profile.path && (
               <div style={{ display:"flex", alignItems:"center", gap:7, background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:20, padding:"5px 14px 5px 10px", fontSize:13, fontWeight:600, color:"#374151" }}>
-                <span style={{ fontSize:16 }}>{PATHS.find(p=>p.id===profile.path)?.icon||"🎓"}</span>
+                <span style={{ fontSize:16 }}>{PATHS.find((p: any) =>p.id===profile.path)?.icon||"🎓"}</span>
                 {profile.path}
               </div>
             )}
