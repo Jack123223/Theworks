@@ -2036,10 +2036,11 @@ function ResearchPage({ profile, setProfile }) {
 
 // ── COMPARE PROGRAMS ──────────────────────────────────────────────────────────
 function ComparePage({ profile }) {
-  const [items,   setItems]   = useState(["", "", ""]);
-  const [loading, setLoading] = useState(false);
-  const [result,  setResult]  = useState(null);
-  const [error,   setError]   = useState("");
+  const [items,       setItems]       = useState(["", "", ""]);
+  const [loading,     setLoading]     = useState(false);
+  const [result,      setResult]      = useState(null);
+  const [error,       setError]       = useState("");
+  const [compareText, setCompareText] = useState("");
 
   const updateItem = (i, v) => { const n=[...items]; n[i]=v; setItems(n); };
 
