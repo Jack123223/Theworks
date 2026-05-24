@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 const API = "/api/claude";
 const MODEL = "claude-sonnet-4-6";
 
-async function callClaude(messages: any[], system = "", max_tokens = 1000) {
+async function callClaude(messages: any[], system = "", max_tokens = 1500) {
   const body: any = { model: MODEL, max_tokens, messages };
   if (system) body.system = system;
   const res = await fetch(API, {
@@ -435,8 +435,8 @@ Return ONLY a JSON object (no markdown):
     try {
       const raw    = await callClaude(
         [{ role:"user", content:prompt }],
-        `You are a neutral career research assistant. You present factual data from BLS, O*NET, and industry sources. You NEVER tell students what they should do. You present options with evidence and let students decide. Always cite your data sources. Return ONLY valid JSON with no markdown or explanation.`,
-        1400
+        `You are a neutral career research assistant. Return ONLY valid JSON with no markdown or explanation.`,
+        2000
       );
       clearInterval(interval);
       const parsed = parseJSON(raw);
@@ -1803,7 +1803,7 @@ function ResearchPage({ profile, setProfile }) {
     setLoading(true); setResult(null); setView("search");
     const promptFn = pathObj?.researchPrompt || PATHS[0].researchPrompt;
     try {
-      const raw    = await callClaude([{role:"user",content:promptFn(q)}],"",1200);
+      const raw    = await callClaude([{role:"user",content:promptFn(q)}],"",2000);
       const parsed = parseJSON(raw);
       if (!parsed.name) parsed.name = q;
       setResult(parsed);
