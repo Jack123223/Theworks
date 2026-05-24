@@ -294,55 +294,26 @@ const S = {
 // O*NET / industry sources and returns factual career profiles — no AI opinions.
 
 const SURVEY_QUESTIONS = [
-  // DIMENSION 1 — How you like to work
-  { id:"w1", dim:"Work Style",    q:"When you have a big project, you usually…",
-    opts:["Break it into steps and follow a plan","Jump in and figure it out as you go","Talk it through with others first","Research everything before starting"] },
+  { id:"w1", dim:"Work Style",    q:"How do you prefer to work?",
+    opts:["With my hands / tools","Analyzing data or numbers","Helping people directly","Generating creative ideas"] },
   { id:"w2", dim:"Work Style",    q:"A perfect work day looks like…",
-    opts:["Solving a hands-on problem with my hands","Helping someone figure something out","Creating or building something new","Analyzing data or information"] },
-  { id:"w3", dim:"Work Style",    q:"You work best when…",
-    opts:["There's a clear structure and routine","Every day is different and unpredictable","You're collaborating with a team","You can work independently and focus"] },
-  { id:"w4", dim:"Work Style",    q:"When something breaks or goes wrong, you…",
-    opts:["Want to fix it yourself right away","Look for who can help or lead the fix","Find the root cause before doing anything","Document it and find a systematic solution"] },
-
-  // DIMENSION 2 — Subjects & skills
+    opts:["Solving a hands-on problem","Helping someone figure something out","Creating or building something new","Analyzing information"] },
   { id:"s1", dim:"Subjects",      q:"Which class do you actually enjoy?",
-    opts:["Math or science","English or writing","Art, music, or design","Health, PE, or biology"] },
-  { id:"s2", dim:"Subjects",      q:"If you had a free period every day, you'd spend it…",
-    opts:["Building or making something","Reading or writing","Drawing, designing, or creating","Talking to people or organizing something"] },
-  { id:"s3", dim:"Subjects",      q:"Friends come to you when they need…",
-    opts:["Help fixing or figuring out how something works","Advice or someone to listen","Creative ideas or a fresh perspective","Someone to organize or plan something"] },
-  { id:"s4", dim:"Subjects",      q:"Technology to you is…",
-    opts:["Something I love to understand and build with","A tool I use but don't think much about","Something I use to create or express myself","Something I use to connect with people"] },
-
-  // DIMENSION 3 — Values & motivation
-  { id:"v1", dim:"Values",        q:"What matters most to you in a future job?",
-    opts:["Good pay and financial stability","Making a difference in people's lives","Creative freedom and expression","Constant learning and new challenges"] },
-  { id:"v2", dim:"Values",        q:"You'd feel most proud if your work…",
-    opts:["Built or fixed something real","Changed someone's life for the better","Was recognized as original or creative","Solved a complex problem no one else could"] },
-  { id:"v3", dim:"Values",        q:"How important is helping others in your work?",
-    opts:["It's the main reason I'd go to work","Important but not the only thing","Less important — I want to build or create","I prefer working with data or systems over people"] },
-  { id:"v4", dim:"Values",        q:"Earning more money vs. loving your work?",
-    opts:["I need both — I won't sacrifice either","I'd take less pay for work I believe in","I'd rather earn well even if the work is just okay","I haven't really thought about this yet"] },
-
-  // DIMENSION 4 — Environment preference
+    opts:["Math or science","English or writing","Art, music, or design","Health or biology"] },
+  { id:"s2", dim:"Subjects",      q:"Friends come to you when they need…",
+    opts:["Help fixing something","Advice or someone to listen","Creative ideas","Help organizing or planning"] },
+  { id:"v1", dim:"Values",        q:"What matters most in a future job?",
+    opts:["Good pay and stability","Making a difference","Creative freedom","Constant learning"] },
+  { id:"v2", dim:"Values",        q:"How important is helping others in your work?",
+    opts:["It's the main reason I'd work","Important but not the only thing","Less important — I want to build","I prefer working with data or systems"] },
   { id:"e1", dim:"Environment",   q:"Where would you rather spend 8 hours?",
-    opts:["Outdoors or in a physical workspace","In a school, hospital, or community setting","In a studio, lab, or creative space","At a desk or in an office"] },
+    opts:["Outdoors or physical workspace","School, hospital, or community","Studio, lab, or creative space","At a desk or office"] },
   { id:"e2", dim:"Environment",   q:"How do you feel about physical or hands-on work?",
-    opts:["I love it — I need to be moving and doing","I'm open to it if it's meaningful","I prefer mental or creative work","I'd rather avoid physical labor"] },
-  { id:"e3", dim:"Environment",   q:"How do you feel about working with people all day?",
-    opts:["Love it — I get energy from people","It's fine in doses but I need alone time","I prefer small focused teams","I'd rather work mostly alone"] },
-  { id:"e4", dim:"Environment",   q:"Travel and varied locations for work?",
-    opts:["Yes — I want variety and to see new places","Sometimes — occasional travel is fine","No — I want to be close to home","I haven't thought about this"] },
-
-  // DIMENSION 5 — Future vision
-  { id:"f1", dim:"Future Vision", q:"In 10 years, what's most important to you?",
-    opts:["Own a business or be my own boss","Have a stable career with good benefits","Be known as an expert in something","Be doing work that changes the world"] },
+    opts:["Love it — I need to be moving","Open to it if meaningful","Prefer mental or creative work","Would rather avoid physical labor"] },
+  { id:"f1", dim:"Future Vision", q:"In 10 years, what's most important?",
+    opts:["Own a business or be my own boss","Stable career with good benefits","Be an expert in something","Do work that changes the world"] },
   { id:"f2", dim:"Future Vision", q:"How do you feel about more school after high school?",
-    opts:["I want to keep learning — college or grad school","I'd do a short program or certification","I'd rather learn on the job — apprenticeship or work","I'm not sure yet"] },
-  { id:"f3", dim:"Future Vision", q:"Which sentence sounds most like you?",
-    opts:["I want to build things people use every day","I want to take care of people","I want to create things that didn't exist before","I want to understand how systems and the world work"] },
-  { id:"f4", dim:"Future Vision", q:"If you could shadow someone for a week, you'd pick…",
-    opts:["A nurse, doctor, or social worker","An engineer, electrician, or contractor","A designer, filmmaker, or musician","A business owner, lawyer, or data scientist"] },
+    opts:["College or grad school","Short program or certification","Learn on the job — apprenticeship or work","Not sure yet"] },
 ];
 
 const DIM_COLORS = {
@@ -393,44 +364,14 @@ function CareerDiscoveryPage({ profile, setProfile }) {
     let mi = 0;
     const interval = setInterval(() => { mi++; if (msgs[mi]) setLoadMsg(msgs[mi]); }, 3500);
 
-    // Build a profile summary from answers for the prompt
-    const summary = SURVEY_QUESTIONS.map(q => `${q.dim} — "${q.q}": "${ans[q.id] || "skipped"}"`).join("\n");
+    const summary = SURVEY_QUESTIONS.map(q => `${q.q}: ${ans[q.id]||"skipped"}`).join(" | ");
 
-    const prompt = `You are a career research assistant. A student completed a career interest survey. Your job is NOT to tell them what career to pick — instead, research and present factual information about 4-5 matching career fields so they can make their own informed decision.
+    const prompt = `Student career survey answers: ${summary}
 
-SURVEY ANSWERS:
-${summary}
+Return JSON only, no markdown:
+{"clusters":["cluster1","cluster2"],"careers":[{"title":"Career","cluster":"field","what_they_do":"1 sentence","median_salary":"$XX,XXX/yr","job_outlook":"+X% 10yr growth","education_required":"what's needed","college_required":false,"paths_to_enter":["path1","path2"],"why_it_matches":"1 sentence","bls_url":"https://www.bls.gov/ooh/...","learn_more":["https://www.onetonline.org/..."]}],"survey_pattern":"2 sentences on work preferences"}
 
-INSTRUCTIONS:
-1. Analyze the answers to identify 2-3 career cluster themes (e.g. Healthcare, Skilled Trades, Creative Arts, Technology, Business, Education, Science, Public Service, Entrepreneurship)
-2. For each of 4-5 specific careers that match the survey pattern, provide ONLY factual, sourced information — no opinions, no "you should"
-3. Base salary data on BLS.gov Occupational Outlook Handbook figures
-4. Base job outlook on BLS 10-year projections
-5. Include what education/training is actually required — be honest if college is NOT required
-6. Do NOT say "based on your answers you should be a ___" — instead say "Here is what research shows about this field"
-
-Return ONLY a JSON object (no markdown):
-{
-  "clusters": ["cluster1", "cluster2"],
-  "careers": [
-    {
-      "title": "Career Title",
-      "cluster": "Healthcare",
-      "what_they_do": "2-sentence factual description of the day-to-day work",
-      "median_salary": "$XX,XXX per year",
-      "salary_source": "BLS Occupational Outlook Handbook 2024-25",
-      "job_outlook": "+X% growth over 10 years (faster/slower/average than average)",
-      "outlook_source": "BLS 2024-2034 projections",
-      "education_required": "What is actually required — be specific",
-      "college_required": true or false,
-      "paths_to_enter": ["path1 e.g. 4-year degree", "path2 e.g. apprenticeship", "path3 e.g. certification"],
-      "why_it_matches": "1 sentence connecting survey answers to this career — factual, not prescriptive",
-      "bls_url": "https://www.bls.gov/ooh/...",
-      "learn_more": ["https://www.onetonline.org/...", "https://real-url.org"]
-    }
-  ],
-  "survey_pattern": "2-sentence neutral summary of what the survey answers reveal about this student's work preferences — no career recommendations, just patterns"
-}`;
+Give 4 matching careers with real BLS salary data.`;
 
     try {
       const raw    = await callClaude(
