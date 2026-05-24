@@ -889,13 +889,18 @@ function TranscriptPage({ profile, setProfile }) {
       const reader = new FileReader();
       reader.onload = async (ev) => {
         try {
-          // PDF.js is loaded in the HTML via CDN
-          const pdfjsLib = window.pdfjsLib;
+          // PDF.js loaded via layout Script tag
+          const pdfjsLib = (window as any).pdfjsLib;
           if (!pdfjsLib) {
             setFileErr("PDF reader not available. Switch to Paste Text tab and copy your grades.");
             return;
           }
-          const typedArray = new Uint8Array(ev.target.result);
+          // Set worker source if not already set
+          if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc =
+              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+          }
+          const typedArray = new Uint8Array(ev.target.result as ArrayBuffer);
           const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
           const allText = [];
           for (let i = 1; i <= pdf.numPages; i++) {
@@ -1032,7 +1037,7 @@ Return ONLY valid JSON (absolutely no markdown, no backticks, no explanation bef
 }`;
 
     try {
-      const raw    = await callClaude([{role:"user",content:prompt}],"",1200);
+      const raw    = await callClaude([{role:"user",content:prompt}],"",2000);
       // Robust JSON extraction — find the JSON block even if Claude adds text around it
       const clean  = raw.replace(/```json/g,"").replace(/```/g,"").trim();
       const jsonMatch = clean.match(/\{[\s\S]*\}/);
