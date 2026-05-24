@@ -2162,6 +2162,37 @@ function ComparePage({ profile }) {
         </Card>
       )}
 
+      {compareText&&!loading&&(
+        <Card>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
+            <div style={{ fontSize:15, fontWeight:700, color:"#0F172A" }}>⚖️ {items.filter((x: any)=>x.trim()).join(" vs ")}</div>
+            <button onClick={()=>{ setCompareText(""); setResult(null); setItems(["","",""]); setError(""); }} style={{ ...S.sec, fontSize:12, padding:"6px 14px" }}>← Compare something else</button>
+          </div>
+          <div style={{ fontSize:13, color:"#374151", lineHeight:1.9 }}>
+            {compareText.split("\n").map((line: any, i: number) => {
+              const boldParts = line.split(/\*\*(.*?)\*\*/g);
+              return (
+                <div key={i} style={{ marginBottom: line.trim()===""?10:2 }}>
+                  {boldParts.map((bp: any, k: number) =>
+                    k%2===1 ? <strong key={k} style={{ color:"#0F172A", fontSize:14 }}>{bp}</strong>
+                            : <span key={k} style={{ color: line.includes("✅")?"#065F46": line.includes("❌")?"#991B1B":"#374151" }}>{bp}</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ marginTop:14, paddingTop:12, borderTop:"1px solid #F1F5F9", display:"flex", gap:10, flexWrap:"wrap" }}>
+            {items.filter((x: any)=>x.trim()).map((item: any,i: number) => (
+              <a key={i} href={`https://www.google.com/search?q=${encodeURIComponent(item+" requirements apply 2025")}`}
+                target="_blank" rel="noreferrer"
+                style={{ fontSize:12, color:"#1A56DB", textDecoration:"none", fontWeight:600, background:"#EFF6FF", padding:"6px 12px", borderRadius:20, border:"1px solid #BFDBFE" }}>
+                🔎 Research {item}
+              </a>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {result&&!loading&&(
         <>
           <Card style={{ background:"#EFF6FF", border:"1px solid #BFDBFE" }}>
